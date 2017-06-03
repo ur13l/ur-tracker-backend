@@ -168,7 +168,9 @@ return [
          */
         Laravel\Tinker\TinkerServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
-        Barryvdh\Cors\ServiceProvider::class, 
+        Barryvdh\Cors\ServiceProvider::class,
+        'Jenssegers\Mongodb\Auth\PasswordResetServiceProvider',
+
 
         /*
          * Application Service Providers...

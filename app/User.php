@@ -33,11 +33,24 @@ class User extends Eloquent implements AuthenticatableContract, AuthorizableCont
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'travels'
     ];
 
     public function setPasswordAttribute($password)
    {
        $this->attributes['password'] = bcrypt($password);
+   }
+
+   public function save(array $options = array())
+   {
+       if(empty($this->api_token)) {
+           $this->api_token = str_random(60);
+       }
+       return parent::save($options);
+   }
+
+
+   public function travels() {
+     return $this->embedsMany('App\Travel');
    }
 }
