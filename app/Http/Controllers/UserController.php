@@ -29,4 +29,28 @@ class UserController extends Controller
     ));
 
   }
+
+
+  public function check(Request $request) {
+    $user = Auth::guard('api')->user();
+    $data = false;
+    $status = 404;
+    $success = false;
+    $errors = [];
+
+    if(isset($user)){
+      $data = true;
+      $success = true;
+      $status = 200;
+    }
+    else {
+      $errors[] = "No se encontró al usuario";
+    }
+    return response()->json(array(
+      'success' => $success,
+      'status' => $status,
+      'errors' => $errors,
+      'data' => $data
+    ));
+  }
 }
