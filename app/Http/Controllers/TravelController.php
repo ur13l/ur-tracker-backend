@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 class TravelController extends Controller
 {
+    /**
+     * Retrieve the list of travels by user's api_token.
+     * @param  Request $request HTTP Request
+     * @return *           
+     */
     public function get(Request $request) {
       $user = Auth::guard('api')->user();
 

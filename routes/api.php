@@ -21,5 +21,6 @@ Route::middleware('auth:api')->middleware('cors')->get('/user', function (Reques
 Route::group(['prefix' => 'user'], function() {
   Route::post('login', 'UserController@login');
   Route::post('check', 'UserController@check');
+  Route::post('register', 'UserController@register');
   Route::post('travels', 'TravelController@get');
 });

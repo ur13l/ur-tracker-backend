@@ -5,10 +5,18 @@ namespace App\Http\Controllers;
 
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use App\User;
 
 class UserController extends Controller
 {
+
+  /**
+   * Authenticate the user by an email and password.
+   * @param  Request $request HTTP Request
+   * @return *
+   */
   public function login(Request $request) {
     $email = $request->email;
     $password = $request->password;
@@ -31,6 +39,11 @@ class UserController extends Controller
   }
 
 
+  /**
+   * Verify the api_token to identify if the user is valid.
+   * @param  Request $request Request HTTP
+   * @return *
+   */
   public function check(Request $request) {
     $user = Auth::guard('api')->user();
     $data = false;
@@ -49,6 +62,31 @@ class UserController extends Controller
     return response()->json(array(
       'success' => $success,
       'status' => $status,
+      'errors' => $errors,
+      'data' => $data
+    ));
+  }
+
+  public function register(Request $request) {
+    $rules = array(
+      'email' => 'unique:users|email|required',
+      'password' => 'required|confirmed',
+      'name' => 'required'
+    );
+    $validator = Validator::make($request->all(), $rules);
+    $errors = [];
+    $success = true;
+    $data = null;
+    if ($validator->fails()) {
+      $success = false;
+      $errors = $validator->messages();
+    }
+    else {
+      $data = User::create($request->all());
+    }
+
+    return response()->json(array(
+      'success' => $success,
       'errors' => $errors,
       'data' => $data
     ));
