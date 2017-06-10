@@ -66,7 +66,11 @@ class UserController extends Controller
       'data' => $data
     ));
   }
-
+/**
+ * Api method to register users
+ * @param  Request $request HTTP Request
+ * @return *
+ */
   public function register(Request $request) {
     $rules = array(
       'email' => 'unique:users|email|required',
@@ -79,7 +83,8 @@ class UserController extends Controller
     $data = null;
     if ($validator->fails()) {
       $success = false;
-      $errors = $validator->messages();
+      $messages = $validator->messages()->all();
+      $errors = $messages;
     }
     else {
       $data = User::create($request->all());
