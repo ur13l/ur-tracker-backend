@@ -66,6 +66,8 @@ class UserController extends Controller
       'data' => $data
     ));
   }
+
+
 /**
  * Api method to register users
  * @param  Request $request HTTP Request
@@ -87,7 +89,49 @@ class UserController extends Controller
       $errors = $messages;
     }
     else {
+      $request->request->add(['confirmation_token' => str_random(50)]);
+      $request->request->add(['active' => false]);
       $data = User::create($request->all());
+    }
+
+    return response()->json(array(
+      'success' => $success,
+      'errors' => $errors,
+      'data' => $data
+    ));
+  }
+
+
+  public function confirmUser(Request $request) {
+    $rules = array(
+      'confirm_token' => 'required',
+    );
+    $validator = Validator::make($request->all(), $rules);
+    $errors = [];
+    $success = true;
+    $data = null;
+    if ($validator->fails()) {
+      $success = false;
+      $messages = $validator->messages()->all();
+      $errors = $messages;
+    }
+    else {
+      $user = Auth::guard('api')->user();
+      if($user) {
+        if($user->confirm_token == $request->confirm_token) {
+          $user->active = true;
+          $user->save();
+          return redirect()->to('https://google.com');
+        }
+        else {
+          $success = false;
+          $errors[] = "Mismatched tokens";
+        }
+      }
+      else {
+        $success = false;
+        $errors[] = "User not found";
+      }
     }
 
     return response()->json(array(

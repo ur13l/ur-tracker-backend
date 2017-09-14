@@ -24,7 +24,7 @@ class User extends Eloquent implements AuthenticatableContract, AuthorizableCont
      protected $connection = "mongodb";
 
     protected $fillable = [
-        'name', 'email', 'password', 'api_token', 'remember_token'
+        'name', 'email', 'password', 'api_token', 'confirmation_token', 'active', 'remember_token'
     ];
 
     /**

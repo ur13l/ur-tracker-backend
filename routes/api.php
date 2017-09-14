@@ -22,5 +22,10 @@ Route::group(['prefix' => 'user'], function() {
   Route::post('login', 'UserController@login');
   Route::post('check', 'UserController@check');
   Route::post('register', 'UserController@register');
+  Route::get('confirm-user', 'UserController@confirmUser');
+});
+
+Route::group(['prefix' => 'user', 'middleware' => 'auth.api'], function() {
   Route::post('travels', 'TravelController@get');
+  Route::post('resend-mail', 'UserController@resendMail');
 });
