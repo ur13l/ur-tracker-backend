@@ -8,12 +8,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\User;
+use Mail;
 
 class UserController extends Controller
 {
 
   /**
    * Authenticate the user by an email and password.
+   * params: [email*, password*]
    * @param  Request $request HTTP Request
    * @return *
    */
@@ -41,6 +43,7 @@ class UserController extends Controller
 
   /**
    * Verify the api_token to identify if the user is valid.
+   * params: [api_token*]
    * @param  Request $request Request HTTP
    * @return *
    */
@@ -70,6 +73,7 @@ class UserController extends Controller
 
 /**
  * Api method to register users
+ * params: [email*, password*, password_confirmation, name*]
  * @param  Request $request HTTP Request
  * @return *
  */
@@ -83,6 +87,7 @@ class UserController extends Controller
     $errors = [];
     $success = true;
     $data = null;
+    $user = null;
     if ($validator->fails()) {
       $success = false;
       $messages = $validator->messages()->all();
@@ -91,13 +96,18 @@ class UserController extends Controller
     else {
       $request->request->add(['confirmation_token' => str_random(50)]);
       $request->request->add(['active' => false]);
-      $data = User::create($request->all());
+      $user = User::create($request->all());
+
+      Mail::send('emails.users.confirm_user', ['user' => $user], function($m) use ($user) {
+        $m->from('hello@ur-tracker.io', 'Bienvenido a URTracker');
+        $m->to($user->email, $user->name);
+      });
     }
 
     return response()->json(array(
       'success' => $success,
       'errors' => $errors,
-      'data' => $data
+      'data' => $user
     ));
   }
 
@@ -121,7 +131,7 @@ class UserController extends Controller
         if($user->confirm_token == $request->confirm_token) {
           $user->active = true;
           $user->save();
-          return redirect()->to('https://google.com');
+          return redirect()->to(env('RESET_PASSWORD_URL') . "?confirm_token");
         }
         else {
           $success = false;
